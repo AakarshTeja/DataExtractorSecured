@@ -1,5 +1,6 @@
 <?php
   $id=request()->id;
+  if(isset($id)){
   session_start();
   include "../database/connections/db.php";
   $sql=mysqli_query($conn,"SELECT `name`, `email` FROM USERS where id='$id'");
@@ -8,7 +9,7 @@
   // dd($row);
   $_SESSION['name']=$row['name'];
   $_SESSION['email']=$row['email'];
-  $_SESSION['id']=$id;
+  $_SESSION['id']=$id;}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -54,7 +55,7 @@
           </div>
         
     </div>
-    @if($_SESSION['name'])
+    @if(isset($_SESSION['name']))
     <a href="{{route('logout')}}" class="btn btn-danger">Logout</a>
     @else
     <a href="{{route('login')}}" class="btn btn-primary">Login</a>
