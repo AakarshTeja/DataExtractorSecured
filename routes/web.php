@@ -14,5 +14,18 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('index');
+})->name('home');
+
+Route::view('/login','users.login')->name('login');
+Route::post('/logins','LoginController@authenticate')->name('logins');
+
+Route::get('/logout', 'LoginController@logout')->name('logout');
+
+Route::view('/register','users.register')->name('register');
+Route::post('/registers','LoginController@register')->name('registers');
+
+Route::view('/forgotPassword', 'users.forgotPassword')->name('forgotPassword');
+Route::post('/forgotPasswords','LoginController@forgot')->name('forgotPasswords');
+
+Route::view('/dashboard/{id}','users.dashboard')->name('dashboard');
