@@ -57,7 +57,6 @@ class LoginController extends Controller
             $password=$_POST['password'];
             $conf_password=$_POST['confirm_password'];
             $sql=mysqli_query($conn,"SELECT 1 FROM USERS where email='$email'");
-            $row=mysqli_fetch_array($sql);
             if($row){
                 $url=route('register');
                 echo "<script>alert('Email already exists');
