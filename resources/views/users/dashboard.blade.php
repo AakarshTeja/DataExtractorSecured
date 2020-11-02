@@ -7,18 +7,16 @@
 </div>
 <main style="font-size:12px;" role="main" class="col">
 
-          <div class="flash-message">
-            <?php 
-             foreach (['danger', 'warning', 'success', 'info'] as $msg){
-              if(isset($_SESSION['alert-' . $msg])){
-                 $info=$_SESSION["alert-$msg"];
-               echo '<p class="alert alert-'.$msg.'">'.$info.'<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a></p>';
-              }
-             }
-            ?>
-          </div>
+  
      <div class="container" style="padding-bottom:1%;">     
-    <form action="extractprocess.php" method="post" enctype="multipart/form-data">
+        <div class="flash-message">
+            @foreach (['danger', 'warning', 'success', 'info'] as $msg)
+              @if(Session::has('alert-' . $msg))
+              <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }} <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a></p>
+              @endif
+            @endforeach
+          </div>
+    <form action="/extracts" method="post" enctype="multipart/form-data">
       <h3>Select Files to Upload:</h3>
       <label>Please make sure doc files are converted to docx:</label>
       <div class="form-group row">
@@ -38,6 +36,7 @@
             :hover {
             background-color: RoyalBlue;"><i class="fa fa-download"></i> Download</button>
       </div>
+      @csrf
   </form>
   
 

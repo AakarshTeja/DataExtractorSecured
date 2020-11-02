@@ -41,7 +41,7 @@
       </li>
       
       <li class="nav-item">
-        <a class="nav-link" href="support.php" >Support</a>
+      <a class="nav-link" href="{{route('support')}}" >Support</a>
       </li>
     </ul>
    

@@ -29,3 +29,9 @@ Route::view('/forgotPassword', 'users.forgotPassword')->name('forgotPassword');
 Route::post('/forgotPasswords','LoginController@forgot')->name('forgotPasswords');
 
 Route::view('/dashboard/{id}','users.dashboard')->name('dashboard');
+
+Route::match(['get','post'],'/support', function(){
+    return view('support');
+})->name('support');
+
+Route::post('/extracts','ExtractController@extract')->name('extracts');
