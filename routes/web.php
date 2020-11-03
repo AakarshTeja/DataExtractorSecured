@@ -25,8 +25,20 @@ Route::get('/logout', 'LoginController@logout')->name('logout');
 Route::view('/register','users.register')->name('register');
 Route::post('/registers','LoginController@register')->name('registers');
 
-Route::view('/forgotPassword', 'users.forgotPassword')->name('forgotPassword');
-Route::post('/forgotPasswords','LoginController@forgot')->name('forgotPasswords');
+Route::match(['get','post'],'/forgotPassword', function(){
+    return view('users.forgotPassword');
+})->name('forgotPassword');
+Route::post('/forgotPasswords','LoginController@forgotPassword')->name('forgotPasswords');
+
+Route::match(['get', 'post'],'/resetPassword',function(){
+    $request=request();
+        if(!$request->hasValidSignature()){
+            abort(403);
+        }
+    return view('users.resetPassword');
+})->name('resetPassword')->middleware('signed');
+Route::post('/resetPasswords','LoginController@resetPassword')->name('resetPasswords');
+
 
 Route::view('/dashboard/{id}','users.dashboard')->name('dashboard');
 

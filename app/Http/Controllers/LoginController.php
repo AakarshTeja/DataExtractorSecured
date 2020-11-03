@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 
+use PDO,URL,Mail,Exception,Throwable,Storage,Log;
+use App\Mail\ForgotPassword;
 class LoginController extends Controller
 {
     //
@@ -16,11 +18,11 @@ class LoginController extends Controller
         $email= $request->email;
         $password= $request->password;
         $login=route('login');
-        $sql=mysqli_query($conn,"SELECT 1 FROM USERS where email='$email'");
+        $sql=mysqli_query($conn,"SELECT 1 FROM users where email='$email'");
         if($sql){
             $row=mysqli_fetch_array($sql);
             if($row){ 
-                $sql=mysqli_query($conn,"SELECT * FROM USERS where email='$email'");
+                $sql=mysqli_query($conn,"SELECT * FROM users where email='$email'");
                 $row=mysqli_fetch_array($sql);
                 if(password_verify($password, $row["password"])){
                     $id=$row['id'];
@@ -56,8 +58,9 @@ class LoginController extends Controller
             $email=$_POST['email'];
             $password=$_POST['password'];
             $conf_password=$_POST['confirm_password'];
-            $sql=mysqli_query($conn,"SELECT 1 FROM USERS where email='$email'");
-            if($sql){
+            $sql=mysqli_query($conn,"SELECT 1 FROM users where email='$email'");
+            if($sql->num_rows>0){
+                // dd($sql);
                 $url=route('register');
                 echo "<script>alert('Email already exists');
                        location.replace('$url');</script>";
@@ -82,16 +85,16 @@ class LoginController extends Controller
     public function forgotPassword(Request $request)
     {
         require_once '../database/connections/db.php';
-        if(isset($_POST["forgotPassword"])){
+        if(isset($_POST["forgot"])){
             $email = trim($_POST["email"]);
-            $query = $conn->prepare("SELECT id FROM users  WHERE email =?");
-            $query->execute(array($email));
-            $user = $query->fetchAll(PDO::FETCH_ASSOC);
+            $query = mysqli_query($conn,"SELECT * FROM users where email='$email'");
+            // $query->execute(array($email));
+            $user =mysqli_fetch_array($query);
             if(!empty($user))
             {
                 $hours=2;
-                $url=URL::temporarySignedRoute('resetPassword',now()->addHours($hours),['id'=>$user[0]['id']]);
-                $users=$user[0]['first_name'];         
+                $url=URL::temporarySignedRoute('resetPassword',now()->addHours($hours),['id'=>$user['id']]);
+                $users=$user['name'];         
                 $data=[
                     'user'=>$users,
                     'hours'=>$hours,
@@ -121,20 +124,37 @@ class LoginController extends Controller
     }
     public function resetPassword(Request $request)
     {
-        include('../database/connections/db.php');
-        $query = "
-            SELECT IF(req_subscribe, True, False) req_subscribe,IF(subscribe, True, False) subscribe,download from admin_login 
-                WHERE admin_email = ?
-        ";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param("s", $_SESSION['email']);
-        $stmt->execute();
-        $res = $stmt->get_result();
-        $row = $res->fetch_assoc();
-        $subscribe=$row['subscribe'];
-        $req_subscribe=$row['req_subscribe'];
-        $downloads=$row['download'];
-        $stmt->close();
+        require_once '../database/connections/db.php';
+        if(isset($_POST["reset"])){
+            $id = $request->id;
+            $password = trim($_POST["password"]);
+            $confirmPassword = trim($_POST["confirmPassword"]);
+            if($password == $confirmPassword) {
+            $password = password_hash($password, PASSWORD_DEFAULT); 
+            $stmt = mysqli_query($conn,"UPDATE users SET password= '$password' WHERE id = '$id'");
+            // $stmt->execute(array($password,$id));
+            // $affected_rows = $stmt->rowCount();
+            if($stmt) {
+                $url=route('login');
+                $success_message = "Password is reset successfully.<br>Now you are redirecting";
+                return "<script>alert('$success_message');location.replace('$url');</script>";
+            } 
+            else {
+                $error_message = "Failed : <br> Password not updated";
+                $request->session()->flash('alert-warning', $error_message);
+                }
+            }//if same password 
+            else {
+                $error_message = "Password not matched";
+                $request->session()->flash('alert-warning', $error_message);
+            }
+            return redirect()->back();
+        }
+        else{
+            $error_message = "Some error please try again";
+            $request->session()->flash('alert-warning', $error_message);
+        }
+        return redirect()->back();
    
     }
 }

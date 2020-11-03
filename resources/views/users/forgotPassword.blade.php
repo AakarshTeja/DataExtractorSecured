@@ -9,17 +9,27 @@
     <title>Forgot Password</title>
 </head>
 <body>
+        
 <div class="signup-container d-flex align-items-center justify-content-center">
-        <form action="" class="signup-form text-center" method='post'>
-            <h1 class="mb-5 font-weight-light text-uppercase">Data Extractor</h1>
+        
+        <form action="/forgotPasswords" class="signup-form text-center" method='post'>
+            
+        <a href="{{route('home')}}"><h1 class="mb-5 font-weight-light text-uppercase">Data Extractor</h1></a>
             <h2 class="mb-5 font-weight-light">Forgot Password</h2>            
-
+            <div class="flash-message">
+                    @foreach (['danger', 'warning', 'success', 'info'] as $msg)
+                      @if(Session::has('alert-' . $msg))
+                      <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }} <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a></p>
+                      @endif
+                    @endforeach
+            </div>
             <div class="form-group">
-                <input type="email" name="username" id="username" class="form-control rounded-pill form-control-lg" placeholder="Email">
+                <input type="email" name="email" id="username" class="form-control rounded-pill form-control-lg" placeholder="Email">
             </div>
 
             <button type="submit" class="btn mt-5 btn-primary btn-custom btn-block text-uppercase rounded-pill btn-lg" name="forgot">Forgot Password</button>
         @csrf
+        <p class="mt-3 font-weight-normal">Already have an account? <a href="{{route('login')}}"><strong>Login Here</strong></a></p>
         </form>
     </div> 
 
@@ -28,8 +38,3 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 </body>
 </html>
-<?php
- if(isset($_SESSION['forgot'])){
-	echo "<script> Mail sent please check your mail box </script>";
- }
-?>

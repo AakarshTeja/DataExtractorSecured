@@ -11,7 +11,8 @@
 <body>
     <div class="login-container d-flex align-items-center justify-content-center">
         <form action="/logins" class="login-form text-center" method='post'>
-            <h1 class="mb-5 font-weight-light text-uppercase">Data Extractor Login</h1>
+            
+        <a href="{{route('home')}}"><h1 class="mb-5 font-weight-light text-uppercase">Data Extractor Login</h1></a>
             <div class="form-group">
                 <input type="email" name="email" id="username" class="form-control rounded-pill form-control-lg" placeholder="Email">
             </div>

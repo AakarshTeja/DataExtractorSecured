@@ -7,31 +7,31 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <link rel="stylesheet" href="{{asset('css/style.css')}}">
     <!-- <script src="js/signup.js"></script> -->
-    <title>Create Account</title>
+    <title>Reset Password</title>
 </head>
 <body>
 <div class="signup-container d-flex align-items-center justify-content-center">
-        <form action="/registers" class="signup-form text-center" method='post' name="signup_form">
+        <form action="/resetPasswords" class="signup-form text-center" method='post' name="signup_form">
             
-        <h1 class="mb-5 font-weight-light text-uppercase"><a href="{{route('home')}}">Data Extractor Register</a></h1>
+        <a href="{{route('home')}}"><h1 class="mb-5 font-weight-light text-uppercase">Data Extractor</h1></a>
+        <h2 class="mb-5 font-weight-light">Reset Password</h2>            
+            <div class="flash-message">
+                    @foreach (['danger', 'warning', 'success', 'info'] as $msg)
+                      @if(Session::has('alert-' . $msg))
+                      <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }} <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a></p>
+                      @endif
+                    @endforeach
+            </div>
             
-            <div class="form-group">
-            <input type="text" name="name" id="name" class="form-control rounded-pill form-control-lg" placeholder="Name" value"{{old('name')}}"required>
-            </div>
-
-            <div class="form-group">
-            <input type="email" name="email" id="username" class="form-control rounded-pill form-control-lg" placeholder="Email" value="{{old('email')}}" required>
-            </div>
-
             <div class="form-group">
                 <input type="password" name="password" id="password" class="form-control rounded-pill form-control-lg" placeholder="Password" required>
             </div>
             
             <div class="form-group">
-                <input type="password" name="confirm_password" id="confirm_password" class="form-control rounded-pill form-control-lg" placeholder="Confirm Password" required>
+                <input type="password" name="confirmPassword" id="confirmPassword" class="form-control rounded-pill form-control-lg" placeholder="Confirm Password" required>
             </div>
-
-            <button type="submit" class="btn mt-5 btn-primary btn-custom btn-block text-uppercase rounded-pill btn-lg" name="signup" onclick="password_check();">Signup</button>
+        <input type="hidden" name="id" value="{{request()->id}}">
+            <button type="submit" class="btn mt-5 btn-primary btn-custom btn-block text-uppercase rounded-pill btn-lg" name="reset" onclick="password_check();">Signup</button>
 
             
         <p class="mt-3 font-weight-normal">Already have an account? <a href="{{route('login')}}"><strong>Login Here</strong></a></p>
