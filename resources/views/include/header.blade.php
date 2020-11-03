@@ -3,7 +3,7 @@
   if(isset($id)){
   session_start();
   include "../database/connections/db.php";
-  $sql=mysqli_query($conn,"SELECT `name`, `email` FROM USERS where id='$id'");
+  $sql=mysqli_query($conn,"SELECT `name`, `email` FROM users where id='$id'");
   if(!$sql){ print_r("Error");}
   $row=mysqli_fetch_array($sql);
   // dd($row);
