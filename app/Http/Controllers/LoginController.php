@@ -18,26 +18,37 @@ class LoginController extends Controller
         $email= $request->email;
         $password= $request->password;
         $login=route('login');
-        $sql=mysqli_query($conn,"SELECT 1 FROM users where email='$email'");
-        if($sql){
-            $row=mysqli_fetch_array($sql);
-            if($row){ 
-                $sql=mysqli_query($conn,"SELECT * FROM users where email='$email'");
-                $row=mysqli_fetch_array($sql);
+        $stmt=$conn->prepare("SELECT 1 FROM users where email=?");
+        $stmt->bind_param("s",$email);
+        $stmt->execute();
+        
+        if($stmt){
+            $res = $stmt->get_result();
+            $res = $res ->fetch_assoc();
+            if($res){ 
+                $sql=$conn->prepare("SELECT * FROM users where email=?");
+                $sql->bind_param("s",$email);
+                $sql->execute();
+                $res = $sql->get_result();
+                $row = $res->fetch_assoc();
                 if(password_verify($password, $row["password"])){
                     $id=$row['id'];
+                    $conn->close();
                     $url=route('dashboard',$id);
                     echo "<script>location.replace('$url');</script>";
                 }
                 else{
+                    $conn->close();
                     echo "<script>alert('Wrong password try again');location.replace('$login');</script>";
                 }
             }
             else{
+                $conn->close();
                 echo "<script>alert('Email doesnt exist please check again');location.replace('$login');</script>";
             }
         }
         else{
+            $conn->close();
             echo "<script>alert('Some error please try again');location.replace('$login');</script>";
         }
 
@@ -48,27 +59,33 @@ class LoginController extends Controller
         session_start();
         session_unset();
         session_destroy();
-        return view('index');
+        return redirect()->route('home');
     }   
     public function register(Request $request)
     {
         if(isset($_POST["signup"])){
             require_once '../database/connections/db.php';
-            $name=$_POST['name'];
-            $email=$_POST['email'];
-            $password=$_POST['password'];
-            $conf_password=$_POST['confirm_password'];
-            $sql=mysqli_query($conn,"SELECT 1 FROM users where email='$email'");
-            if($sql->num_rows>0){
-                // dd($sql);
+            $name=htmlspecialchars($request->name);
+            $email=$request->email;
+            $password=$request->password;
+            $conf_password=$request->confirm_password;
+
+            $stmt=$conn->prepare("SELECT 1 FROM users where email=?");
+            $stmt->bind_param("s",$email);
+            $stmt->execute();
+            $res=$stmt->get_result();
+            $res=$res->fetch_assoc();
+            if($res){
                 $url=route('register');
                 echo "<script>alert('Email already exists');
                        location.replace('$url');</script>";
             }
             elseif($password==$conf_password){
                 $password=password_hash($password, PASSWORD_DEFAULT);
-                $sql=mysqli_query($conn,"INSERT INTO `users`( `name`, `email`, `password`) VALUES ('$name','$email','$password')");
-                if($sql){
+                $sql=$conn->prepare("INSERT INTO `users`( `name`, `email`, `password`) VALUES (?,?,?)");
+                $sql->bind_param("sss",$name,$email,$password);
+                $sql->execute();
+                if($sql->affected_rows==1){
                     $url=route('login');
                     echo "<script>alert('Credentials created redirecting to login');
                            location.replace('$url');</script>";
@@ -87,9 +104,11 @@ class LoginController extends Controller
         require_once '../database/connections/db.php';
         if(isset($_POST["forgot"])){
             $email = trim($_POST["email"]);
-            $query = mysqli_query($conn,"SELECT * FROM users where email='$email'");
-            // $query->execute(array($email));
-            $user =mysqli_fetch_array($query);
+            $sql=$conn->prepare("SELECT * FROM users where email=?");
+                $sql->bind_param("s",$email);
+                $sql->execute();
+                $res = $sql->get_result();
+                $user = $res->fetch_assoc();
             if(!empty($user))
             {
                 $hours=2;
@@ -131,15 +150,17 @@ class LoginController extends Controller
             $confirmPassword = trim($_POST["confirmPassword"]);
             if($password == $confirmPassword) {
             $password = password_hash($password, PASSWORD_DEFAULT); 
-            $stmt = mysqli_query($conn,"UPDATE users SET password= '$password' WHERE id = '$id'");
-            // $stmt->execute(array($password,$id));
-            // $affected_rows = $stmt->rowCount();
-            if($stmt) {
+            // $stmt = mysqli_query($conn,"UPDATE users SET password= '$password' WHERE id = '$id'");
+            $sql=$conn->prepare("UPDATE users SET password=? WHERE id = ?");
+            $sql->bind_param("si",$password,$id);
+            $sql->execute();
+            if($sql->affected_rows==1) {
                 $url=route('login');
                 $success_message = "Password is reset successfully.<br>Now you are redirecting";
                 return "<script>alert('$success_message');location.replace('$url');</script>";
             } 
             else {
+                // dd($sql->affected_rows);
                 $error_message = "Failed : <br> Password not updated";
                 $request->session()->flash('alert-warning', $error_message);
                 }

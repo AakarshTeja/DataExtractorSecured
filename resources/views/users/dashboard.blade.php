@@ -69,9 +69,9 @@
                       // $imageURL = 'uploads/'.$row["file_name"]; ?>
 
             <tr>
-                  <td><?php echo $row['id']; ?></td>
-                  <td><?php echo $row['uploaded_on']; ?></td>
-                  <td><a href="#"><?php echo $row['file_name']; ?></a><br></td>
+                  <td>{{$row['id']}}</td>
+                  <td>{{$row['uploaded_on']}}?></td>
+                  <td><a href="#">{{$row['file_name']}}</a><br></td>
             </tr>
                   <?php } ?>
             </tbody>
