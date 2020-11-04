@@ -165,5 +165,5 @@ for f in files:
         row+=1
         
 
-wb.save('storage/app/public/resume_data.xls')
-print("Saved the file in below location\n{}".format(os.path.abspath('resume_data.xls')))
+wb.save('storage/app/resume_data.xls')
+print("Saved the file in below location\n{}".format(os.path.abspath('storage/app/resume_data.xls')))

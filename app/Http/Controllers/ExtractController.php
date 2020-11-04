@@ -85,9 +85,9 @@ class ExtractController extends Controller
                 return redirect()->back();
         }
         if(isset($_POST['download'])){
-          if(Storage::exists("public/resume_data.xls")){
+          if(Storage::exists("resume_data.xls")){
                 $request->session()->flash('alert-success', "Downloaded the file");
-               return Storage::download("public/resume_data.xls");                        
+               return Storage::download("resume_data.xls");                        
             }
             else{
                 $request->session()->flash('alert-warning', "Some error please try again");
