@@ -145,7 +145,7 @@ class LoginController extends Controller
     {
         require_once '../database/connections/db.php';
         if(isset($_POST["reset"])){
-            $id = $request->id;
+            $id = (int)$request->id;
             $password = trim($_POST["password"]);
             $confirmPassword = trim($_POST["confirmPassword"]);
             if($password == $confirmPassword) {

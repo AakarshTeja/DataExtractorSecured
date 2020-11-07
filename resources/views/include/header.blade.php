@@ -3,10 +3,13 @@
   if(isset($id)){
   session_start();
   include "../database/connections/db.php";
-  $sql=mysqli_query($conn,"SELECT `name`, `email` FROM users where id='$id'");
+  $sql=$conn->prepare("SELECT `name`, `email` FROM users where id=?");
+                $sql->bind_param("i",$id);
+                $sql->execute();
+                
   if(!$sql){ print_r("Error");}
-  $row=mysqli_fetch_array($sql);
-  // dd($row);
+  $res = $sql->get_result();
+  $row = $res->fetch_assoc();
   $_SESSION['name']=$row['name'];
   $_SESSION['email']=$row['email'];
   $_SESSION['id']=$id;}
